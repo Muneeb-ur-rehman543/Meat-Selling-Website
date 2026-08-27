@@ -6,7 +6,8 @@ function Navbar() {
 
       <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
 
-        {/* Logo */}
+        {/* ================= LOGO ================= */}
+
         <Link
           to="/"
           onClick={() => window.scrollTo(0, 0)}
@@ -29,10 +30,12 @@ function Navbar() {
 
         </Link>
 
-        {/* Navigation */}
-        <div className="hidden md:flex items-center gap-8">
+        {/* ================= NAVIGATION ================= */}
+
+        <div className="hidden md:flex items-center gap-7">
 
           {/* HOME */}
+
           <Link
             to="/"
             onClick={() => window.scrollTo(0, 0)}
@@ -42,6 +45,7 @@ function Navbar() {
           </Link>
 
           {/* CATEGORIES */}
+
           <a
             href="/#categories"
             className="text-[#E8C7C7] font-semibold hover:text-red-500 transition duration-300"
@@ -50,6 +54,7 @@ function Navbar() {
           </a>
 
           {/* PRODUCTS */}
+
           <a
             href="/#products"
             className="text-[#E8C7C7] font-semibold hover:text-red-500 transition duration-300"
@@ -58,6 +63,7 @@ function Navbar() {
           </a>
 
           {/* ABOUT */}
+
           <a
             href="/#about"
             className="text-[#E8C7C7] font-semibold hover:text-red-500 transition duration-300"
@@ -66,6 +72,7 @@ function Navbar() {
           </a>
 
           {/* CONTACT */}
+
           <a
             href="/#contact"
             className="text-[#E8C7C7] font-semibold hover:text-red-500 transition duration-300"
@@ -75,17 +82,88 @@ function Navbar() {
 
         </div>
 
-        {/* Shop Now */}
-        <a
-          href="/#products"
-          className="hidden md:block bg-[#DC2626] hover:bg-[#B91C1C] text-white px-7 py-3 rounded-xl font-bold shadow-lg shadow-red-950/60 hover:-translate-y-0.5 transition-all duration-300"
-        >
-          Shop Now
-        </a>
+        {/* ================= RIGHT BUTTONS ================= */}
+
+        <div className="flex items-center gap-3">
+
+          {/* ADMIN BUTTON */}
+
+          <Link
+            to="/admin"
+            className="
+              hidden
+              md:flex
+              items-center
+              gap-2
+              border
+              border-red-600/60
+              text-red-400
+              hover:bg-red-600
+              hover:text-white
+              px-5
+              py-3
+              rounded-xl
+              font-bold
+              transition-all
+              duration-300
+            "
+          >
+            ⚙️ Admin
+          </Link>
+
+          {/* CART BUTTON */}
+
+          <Link
+            to="/cart"
+            className="
+              flex
+              items-center
+              gap-2
+              border
+              border-red-600/60
+              text-white
+              hover:bg-red-600
+              px-5
+              py-3
+              rounded-xl
+              font-bold
+              transition-all
+              duration-300
+            "
+          >
+            🛒 Cart
+          </Link>
+
+          {/* SHOP NOW */}
+
+          <a
+            href="/#products"
+            className="
+              hidden
+              md:block
+              bg-[#DC2626]
+              hover:bg-[#B91C1C]
+              text-white
+              px-7
+              py-3
+              rounded-xl
+              font-bold
+              shadow-lg
+              shadow-red-950/60
+              hover:-translate-y-0.5
+              transition-all
+              duration-300
+            "
+          >
+            Shop Now
+          </a>
+
+        </div>
 
       </div>
 
       {/* Red Accent */}
+
       <div className="h-[2px] bg-gradient-to-r from-transparent via-[#DC2626] to-transparent"></div>
 
     </nav>

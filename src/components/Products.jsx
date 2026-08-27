@@ -1,12 +1,61 @@
-import { useState } from "react";
+import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
 import products from "../data/products";
 
 function Products() {
+
+  const [allProducts, setAllProducts] = useState([]);
+
   const [cart, setCart] = useState(
     JSON.parse(localStorage.getItem("cart")) || []
   );
 
+  // =========================
+  // LOAD ALL PRODUCTS
+  // =========================
+
+  const loadProducts = () => {
+
+    const adminProducts =
+      JSON.parse(
+        localStorage.getItem("adminProducts")
+      ) || [];
+
+    setAllProducts([
+      ...products,
+      ...adminProducts,
+    ]);
+  };
+
+  useEffect(() => {
+
+    loadProducts();
+
+    // Update when Admin adds product
+    const handleProductsUpdated = () => {
+      loadProducts();
+    };
+
+    window.addEventListener(
+      "productsUpdated",
+      handleProductsUpdated
+    );
+
+    return () => {
+      window.removeEventListener(
+        "productsUpdated",
+        handleProductsUpdated
+      );
+    };
+
+  }, []);
+
+  // =========================
+  // ADD TO CART
+  // =========================
+
   const addToCart = (product) => {
+
     const existingProduct = cart.find(
       (item) => item.id === product.id
     );
@@ -14,6 +63,7 @@ function Products() {
     let updatedCart;
 
     if (existingProduct) {
+
       updatedCart = cart.map((item) =>
         item.id === product.id
           ? {
@@ -22,7 +72,9 @@ function Products() {
             }
           : item
       );
+
     } else {
+
       updatedCart = [
         ...cart,
         {
@@ -30,47 +82,106 @@ function Products() {
           quantity: 1,
         },
       ];
+
     }
 
     setCart(updatedCart);
-    localStorage.setItem("cart", JSON.stringify(updatedCart));
+
+    localStorage.setItem(
+      "cart",
+      JSON.stringify(updatedCart)
+    );
+
+    window.dispatchEvent(
+      new Event("cartUpdated")
+    );
+
+    alert(`${product.name} added to cart!`);
   };
 
   return (
+
     <section
       id="products"
-      className="relative py-24 bg-[#0b0b0b] overflow-hidden"
+      className="
+        relative
+        py-24
+        bg-[#0b0b0b]
+        overflow-hidden
+      "
     >
+
       {/* Background Glow */}
-      <div className="absolute top-20 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-red-900/10 blur-[120px] rounded-full"></div>
+
+      <div
+        className="
+          absolute
+          top-20
+          left-1/2
+          -translate-x-1/2
+          w-[600px]
+          h-[300px]
+          bg-red-900/10
+          blur-[120px]
+          rounded-full
+        "
+      ></div>
 
       <div className="relative max-w-7xl mx-auto px-6">
 
-        {/* Heading */}
+        {/* ================= HEADING ================= */}
+
         <div className="text-center mb-14">
 
-          <span className="inline-block px-5 py-2 rounded-full border border-red-600/50 text-red-500 text-sm font-bold uppercase tracking-[4px] mb-6">
+          <span
+            className="
+              inline-block
+              px-5
+              py-2
+              rounded-full
+              border
+              border-red-600/50
+              text-red-500
+              text-sm
+              font-bold
+              uppercase
+              tracking-[4px]
+              mb-6
+            "
+          >
             Our Products
           </span>
 
           <h2 className="text-4xl md:text-6xl font-extrabold text-white">
+
             Fresh Meat{" "}
+
             <span className="text-red-600">
               Collection
             </span>
+
           </h2>
 
           <p className="mt-5 text-gray-400 text-lg">
-            Choose from our selection of fresh and premium quality
-            meat products.
+            Choose from our selection of fresh and premium
+            quality meat products.
           </p>
 
         </div>
 
-        {/* Products Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-7">
+        {/* ================= PRODUCTS ================= */}
 
-          {products.map((product) => (
+        <div
+          className="
+            grid
+            grid-cols-1
+            sm:grid-cols-2
+            lg:grid-cols-4
+            gap-7
+          "
+        >
+
+          {allProducts.map((product) => (
 
             <div
               key={product.id}
@@ -94,8 +205,12 @@ function Products() {
               "
             >
 
-              {/* Product Image */}
-              <div className="relative h-64 overflow-hidden">
+              {/* ================= IMAGE ================= */}
+
+              <Link
+                to={`/product/${product.id}`}
+                className="relative h-64 overflow-hidden block"
+              >
 
                 <img
                   src={product.image}
@@ -113,7 +228,8 @@ function Products() {
                   "
                 />
 
-                {/* Image Overlay */}
+                {/* Overlay */}
+
                 <div
                   className="
                     absolute
@@ -131,6 +247,7 @@ function Products() {
                 ></div>
 
                 {/* Category */}
+
                 <span
                   className="
                     absolute
@@ -144,35 +261,52 @@ function Products() {
                     text-xs
                     font-bold
                     uppercase
-
-                    group-hover:bg-red-500
-
-                    transition-all
-                    duration-300
                   "
                 >
                   {product.category}
                 </span>
 
-              </div>
+                {/* View Details */}
 
-              {/* Product Information */}
+                <span
+                  className="
+                    absolute
+                    bottom-4
+                    right-4
+                    bg-black/80
+                    text-white
+                    px-3
+                    py-2
+                    rounded-lg
+                    text-xs
+                    font-bold
+                    opacity-0
+                    group-hover:opacity-100
+                    transition-all
+                  "
+                >
+                  View Details →
+                </span>
+
+              </Link>
+
+              {/* ================= INFO ================= */}
+
               <div className="p-6">
 
-                <h3
+                <Link
+                  to={`/product/${product.id}`}
                   className="
                     text-xl
                     font-extrabold
                     text-white
-
-                    group-hover:text-red-500
-
-                    transition-colors
-                    duration-300
+                    hover:text-red-500
+                    block
+                    transition
                   "
                 >
                   {product.name}
-                </h3>
+                </Link>
 
                 <p
                   className="
@@ -181,31 +315,39 @@ function Products() {
                     text-sm
                     leading-relaxed
                     min-h-[48px]
-
-                    group-hover:text-gray-200
-
-                    transition-colors
-                    duration-300
                   "
                 >
                   {product.description}
                 </p>
 
                 {/* Price + Cart */}
-                <div className="mt-5 flex items-center justify-between gap-3">
+
+                <div
+                  className="
+                    mt-5
+                    flex
+                    items-center
+                    justify-between
+                    gap-3
+                  "
+                >
 
                   <div>
+
                     <p className="text-2xl font-extrabold text-white">
                       Rs. {product.price}
                     </p>
 
                     <p className="text-xs text-gray-500 mt-1">
-                      1 KG
+                      {product.unit || "1 KG"}
                     </p>
+
                   </div>
 
                   <button
-                    onClick={() => addToCart(product)}
+                    onClick={() =>
+                      addToCart(product)
+                    }
                     className="
                       bg-red-600
                       hover:bg-red-500
@@ -215,12 +357,7 @@ function Products() {
                       rounded-xl
                       font-bold
                       whitespace-nowrap
-
-                      group-hover:shadow-lg
-                      group-hover:shadow-red-600/40
-
                       transition-all
-                      duration-300
                     "
                   >
                     Add to Cart
@@ -237,7 +374,9 @@ function Products() {
         </div>
 
       </div>
+
     </section>
+
   );
 }
 

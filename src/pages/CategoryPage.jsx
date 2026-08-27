@@ -1,173 +1,364 @@
 import { useParams } from "react-router-dom";
 
+// ===============================
+// BEEF IMAGES
+// ===============================
+import beefSteak from "../assets/images/beef.jpg";
+import beefMince from "../assets/images/beef-mince.jpg";
+import beefRibs from "../assets/images/beef-ribs.jpg";
+import beefBoneless from "../assets/images/beef-boneless.jpg";
+
+// ===============================
+// CHICKEN IMAGES
+// ===============================
+import chickenBreast from "../assets/images/chicken-breast.jpg";
+import chickenWings from "../assets/images/chicken-wings.jpg";
+import chickenLeg from "../assets/images/chicken-leg.jpg";
+import chickenBoneless from "../assets/images/boneless-chicken.jpg";
+
+// ===============================
+// MUTTON IMAGES
+// ===============================
+import muttonChops from "../assets/images/mutton-chops.jpg";
+import muttonLeg from "../assets/images/mutton-legs.jpg";
+import muttonRibs from "../assets/images/mutton-ribs.jpg";
+import muttonKarahi from "../assets/images/mutton-karahicut.jpg";
+
+// ===============================
+// SEAFOOD IMAGES
+// ===============================
+import freshFish from "../assets/images/fresh fish.jpg";
+import fishFillet from "../assets/images/fish fillet.jpg";
+import freshPrawns from "../assets/images/fresh-prawns.jpg";
+import shrimp from "../assets/images/shrimp.jpg";
+
+
+// ===============================
+// CATEGORY DATA
+// ===============================
+
 const categoryData = {
+
+  // -------------------------------
+  // BEEF
+  // -------------------------------
   beef: {
     name: "Beef",
     description: "Fresh and premium quality beef cuts",
+
     products: [
       {
         id: 1,
         name: "Beef Steak",
         price: 1800,
         description: "Tender beef steak cuts",
+        image: beefSteak,
       },
       {
         id: 2,
         name: "Beef Mince",
         price: 1200,
         description: "Freshly prepared beef mince",
+        image: beefMince,
       },
       {
         id: 3,
         name: "Beef Ribs",
         price: 1600,
         description: "Fresh and juicy beef ribs",
+        image: beefRibs,
       },
       {
         id: 4,
         name: "Beef Boneless",
         price: 1900,
         description: "Premium boneless beef",
+        image: beefBoneless,
       },
     ],
   },
 
+
+  // -------------------------------
+  // CHICKEN
+  // -------------------------------
   chicken: {
     name: "Chicken",
     description: "Fresh and hygienic chicken products",
+
     products: [
       {
         id: 5,
         name: "Chicken Breast",
         price: 950,
         description: "Fresh boneless chicken breast",
+        image: chickenBreast,
       },
       {
         id: 6,
         name: "Chicken Wings",
         price: 850,
         description: "Fresh chicken wings",
+        image: chickenWings,
       },
       {
         id: 7,
         name: "Chicken Legs",
         price: 800,
         description: "Fresh chicken leg pieces",
+        image: chickenLeg,
       },
       {
         id: 8,
         name: "Chicken Boneless",
         price: 1000,
         description: "Premium boneless chicken",
+        image: chickenBoneless,
       },
     ],
   },
 
+
+  // -------------------------------
+  // MUTTON
+  // -------------------------------
   mutton: {
     name: "Mutton",
     description: "Tender and fresh premium mutton",
+
     products: [
       {
         id: 9,
         name: "Mutton Chops",
         price: 2500,
         description: "Tender mutton chops",
+        image: muttonChops,
       },
       {
         id: 10,
         name: "Mutton Leg",
         price: 2400,
         description: "Fresh premium mutton leg",
+        image: muttonLeg,
       },
       {
         id: 11,
         name: "Mutton Ribs",
         price: 2300,
         description: "Fresh mutton ribs",
+        image: muttonRibs,
       },
       {
         id: 12,
         name: "Mutton Karahi Cut",
         price: 2200,
         description: "Perfectly cut mutton for karahi",
+        image: muttonKarahi,
       },
     ],
   },
 
+
+  // -------------------------------
+  // SEAFOOD
+  // -------------------------------
   seafood: {
     name: "Seafood",
     description: "Fresh fish and premium seafood",
+
     products: [
       {
         id: 13,
         name: "Fresh Fish",
         price: 1600,
         description: "Fresh quality fish",
+        image: freshFish,
       },
       {
         id: 14,
         name: "Fish Fillet",
         price: 1800,
         description: "Fresh boneless fish fillet",
+        image: fishFillet,
       },
       {
         id: 15,
         name: "Fresh Prawns",
         price: 2800,
         description: "Premium fresh prawns",
+        image: freshPrawns,
       },
       {
         id: 16,
         name: "Shrimp",
         price: 2600,
         description: "Fresh quality shrimp",
+        image: shrimp,
       },
     ],
   },
 };
 
+
+// ===============================
+// COMPONENT
+// ===============================
+
 function CategoryPage() {
+
   const { category } = useParams();
 
   const data = categoryData[category];
 
+
+  // Category not found
   if (!data) {
     return (
-      <div className="min-h-screen bg-[#0b0b0b] flex items-center justify-center">
-        <h1 className="text-3xl font-bold text-red-600">
+      <section className="min-h-screen bg-[#090909] flex items-center justify-center">
+
+        <h1 className="text-4xl font-extrabold text-red-500">
           Category Not Found
         </h1>
-      </div>
+
+      </section>
     );
   }
 
+
+  // Add to cart
+  const addToCart = (product) => {
+
+    const oldCart =
+      JSON.parse(localStorage.getItem("cart")) || [];
+
+    const existingProduct = oldCart.find(
+      (item) => item.id === product.id
+    );
+
+    let updatedCart;
+
+    if (existingProduct) {
+
+      updatedCart = oldCart.map((item) =>
+        item.id === product.id
+          ? {
+              ...item,
+              quantity: (item.quantity || 1) + 1,
+            }
+          : item
+      );
+
+    } else {
+
+      updatedCart = [
+        ...oldCart,
+        {
+          ...product,
+          quantity: 1,
+        },
+      ];
+
+    }
+
+    localStorage.setItem(
+      "cart",
+      JSON.stringify(updatedCart)
+    );
+
+    alert(`${product.name} added to cart!`);
+  };
+
+
   return (
-    <section className="min-h-screen bg-[#0b0b0b] py-24 relative overflow-hidden">
+
+    <section
+      className="
+        min-h-screen
+        bg-[#090909]
+        py-24
+        relative
+        overflow-hidden
+      "
+    >
 
       {/* Background Glow */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[650px] h-[300px] bg-red-950/20 blur-[120px] rounded-full"></div>
+
+      <div
+        className="
+          absolute
+          top-20
+          left-1/2
+          -translate-x-1/2
+          w-[600px]
+          h-[300px]
+          bg-red-900/10
+          blur-[120px]
+          rounded-full
+        "
+      ></div>
+
 
       <div className="relative max-w-7xl mx-auto px-6">
 
-        {/* ================= HEADING ================= */}
+
+        {/* ===============================
+            HEADING
+        =============================== */}
+
         <div className="text-center mb-14">
 
-          <p className="inline-block text-red-500 uppercase tracking-[5px] font-bold text-sm mb-5 border border-red-600/40 px-5 py-2 rounded-full">
+          <p
+            className="
+              text-red-500
+              uppercase
+              tracking-[4px]
+              font-bold
+              text-sm
+              mb-3
+            "
+          >
             Fresh Selection
           </p>
 
-          <h1 className="text-5xl md:text-6xl font-extrabold text-white">
+
+          <h1
+            className="
+              text-5xl
+              md:text-6xl
+              font-extrabold
+              text-white
+            "
+          >
             {data.name}
           </h1>
 
-          <p className="text-gray-400 mt-5 text-lg">
+
+          <p
+            className="
+              text-gray-400
+              text-lg
+              mt-4
+            "
+          >
             {data.description}
           </p>
 
         </div>
 
-        {/* ================= PRODUCTS ================= */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-7">
+
+        {/* ===============================
+            PRODUCTS GRID
+        =============================== */}
+
+        <div
+          className="
+            grid
+            grid-cols-1
+            sm:grid-cols-2
+            lg:grid-cols-4
+            gap-7
+          "
+        >
 
           {data.products.map((product) => (
 
@@ -193,39 +384,58 @@ function CategoryPage() {
               "
             >
 
-              {/* ================= IMAGE AREA ================= */}
+
+              {/* ===============================
+                  IMAGE
+              =============================== */}
+
               <div
                 className="
-                  h-52
-                  bg-[#202020]
-                  flex
-                  items-center
-                  justify-center
                   relative
+                  h-52
                   overflow-hidden
-
-                  group-hover:bg-[#3a1118]
-
-                  transition-all
-                  duration-500
+                  bg-[#111111]
                 "
               >
 
-                {/* Meat Emoji */}
-                <span
+                <img
+                  src={product.image}
+                  alt={product.name}
                   className="
-                    text-7xl
+                    w-full
+                    h-full
+                    object-cover
+
+                    group-hover:scale-110
+                    group-hover:brightness-110
+
+                    transition-all
+                    duration-700
+                  "
+                />
+
+
+                {/* Dark Overlay */}
+
+                <div
+                  className="
+                    absolute
+                    inset-0
+                    bg-gradient-to-t
+                    from-black/70
+                    via-transparent
+                    to-transparent
+
+                    group-hover:from-red-950/50
+
                     transition-all
                     duration-500
-
-                    group-hover:scale-125
-                    group-hover:drop-shadow-[0_0_15px_rgba(220,38,38,0.8)]
                   "
-                >
-                  🥩
-                </span>
+                ></div>
+
 
                 {/* Fresh Badge */}
+
                 <span
                   className="
                     absolute
@@ -240,21 +450,21 @@ function CategoryPage() {
                     rounded-full
                     text-xs
                     font-bold
-
-                    group-hover:bg-red-600
-                    group-hover:border-red-500
-
-                    transition-all
-                    duration-300
+                    uppercase
                   "
                 >
-                  FRESH
+                  Fresh
                 </span>
 
               </div>
 
-              {/* ================= PRODUCT INFO ================= */}
+
+              {/* ===============================
+                  PRODUCT DETAILS
+              =============================== */}
+
               <div className="p-6">
+
 
                 <h2
                   className="
@@ -270,6 +480,7 @@ function CategoryPage() {
                 >
                   {product.name}
                 </h2>
+
 
                 <p
                   className="
@@ -287,30 +498,49 @@ function CategoryPage() {
                   {product.description}
                 </p>
 
-                {/* Price + Button */}
-                <div className="flex items-center justify-between mt-6 gap-3">
 
-                  <span
-                    className="
-                      text-xl
-                      font-extrabold
-                      text-red-500
-                    "
-                  >
-                    Rs. {product.price}
-                  </span>
+                {/* Price + Button */}
+
+                <div
+                  className="
+                    flex
+                    items-center
+                    justify-between
+                    gap-3
+                    mt-6
+                  "
+                >
+
+                  <div>
+
+                    <p
+                      className="
+                        text-xl
+                        font-extrabold
+                        text-red-500
+                      "
+                    >
+                      Rs. {product.price}
+                    </p>
+
+                    <p className="text-xs text-gray-500 mt-1">
+                      1 KG
+                    </p>
+
+                  </div>
+
 
                   <button
+                    onClick={() => addToCart(product)}
                     className="
                       bg-red-600
+                      hover:bg-red-500
                       text-white
                       px-4
                       py-3
                       rounded-xl
                       font-bold
                       whitespace-nowrap
-
-                      hover:bg-red-500
 
                       group-hover:shadow-lg
                       group-hover:shadow-red-600/40
@@ -333,6 +563,7 @@ function CategoryPage() {
         </div>
 
       </div>
+
     </section>
   );
 }
