@@ -14,16 +14,14 @@ import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
 import Admin from "./pages/Admin";
 import Login from "./pages/Login";
+import Register from "./pages/Register";
 
 function App() {
   return (
     <BrowserRouter>
-
       <Navbar />
 
       <Routes>
-
-        {/* HOME */}
         <Route
           path="/"
           element={
@@ -37,46 +35,48 @@ function App() {
           }
         />
 
-        {/* CATEGORY */}
+        <Route
+          path="/products"
+          element={<Products />}
+        />
+
         <Route
           path="/category/:category"
           element={<CategoryPage />}
         />
 
-        {/* PRODUCT DETAILS */}
         <Route
           path="/product/:id"
           element={<ProductDetails />}
         />
 
-        {/* CART */}
         <Route
           path="/cart"
           element={<Cart />}
         />
 
-        {/* CHECKOUT */}
         <Route
           path="/checkout"
           element={<Checkout />}
         />
 
-        {/* LOGIN */}
         <Route
           path="/login"
           element={<Login />}
         />
 
-        {/* ADMIN */}
+        <Route
+          path="/register"
+          element={<Register />}
+        />
+
         <Route
           path="/admin"
           element={<Admin />}
         />
-
       </Routes>
 
       <Footer />
-
     </BrowserRouter>
   );
 }

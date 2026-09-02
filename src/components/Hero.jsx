@@ -1,20 +1,18 @@
+import { Link } from "react-router-dom";
 import heroImage from "../assets/images/hero-meat.jpg";
 
 function Hero() {
   return (
     <section className="relative min-h-[600px] flex items-center overflow-hidden">
 
-      {/* Background Image */}
       <img
         src={heroImage}
         alt="Fresh Meat"
         className="absolute inset-0 w-full h-full object-cover"
       />
 
-      {/* Dark Overlay */}
       <div className="absolute inset-0 bg-black/55"></div>
 
-      {/* Content */}
       <div className="relative z-10 w-full max-w-7xl mx-auto px-6">
 
         <div className="max-w-2xl text-white">
@@ -36,9 +34,12 @@ function Hero() {
 
           <div className="flex flex-wrap gap-4">
 
-            <button className="bg-red-600 hover:bg-red-700 text-white px-8 py-4 rounded-lg font-bold text-lg transition duration-300">
+            <Link
+              to="/products"
+              className="bg-red-600 hover:bg-red-700 text-white px-8 py-4 rounded-lg font-bold text-lg transition duration-300"
+            >
               Shop Now
-            </button>
+            </Link>
 
             <a
               href="#categories"

@@ -1,13 +1,14 @@
 import { useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
-function Login() {
+function Register() {
   const navigate = useNavigate();
-  const location = useLocation();
 
   const [formData, setFormData] = useState({
+    name: "",
     email: "",
     password: "",
+    confirmPassword: "",
   });
 
   const handleChange = (e) => {
@@ -17,134 +18,95 @@ function Login() {
     });
   };
 
-  const handleLogin = (e) => {
+  const handleRegister = (e) => {
     e.preventDefault();
 
+    const name = formData.name.trim();
     const email = formData.email.trim().toLowerCase();
     const password = formData.password;
 
-    if (
-      email === "admin@gmail.com" &&
-      password === "admin123"
-    ) {
-      localStorage.setItem("isLoggedIn", "true");
-      localStorage.setItem("userRole", "admin");
-      localStorage.setItem("userEmail", email);
-      localStorage.setItem("userName", "Admin");
-
-      window.dispatchEvent(new Event("loginUpdated"));
-
-      alert("Admin login successful!");
-
-      navigate("/admin");
+    // Password match
+    if (password !== formData.confirmPassword) {
+      alert("Passwords do not match!");
       return;
     }
 
+    // Password length
+    if (password.length < 6) {
+      alert("Password must be at least 6 characters!");
+      return;
+    }
+
+    // Get existing users
     const users =
       JSON.parse(localStorage.getItem("users")) || [];
 
-    const user = users.find(
-      (item) =>
-        item.email.toLowerCase() === email &&
-        item.password === password
+    // Check existing email
+    const existingUser = users.find(
+      (user) => user.email.toLowerCase() === email
     );
 
-    if (!user) {
-      alert(
-        "Invalid email or password. Please create an account first."
-      );
+    if (existingUser) {
+      alert("An account with this email already exists!");
       return;
     }
 
-    localStorage.setItem("isLoggedIn", "true");
-    localStorage.setItem("userRole", "user");
-    localStorage.setItem("userEmail", user.email);
-    localStorage.setItem("userName", user.name);
+    // Create new user
+    const newUser = {
+      id: Date.now(),
+      name,
+      email,
+      password,
+    };
 
-    window.dispatchEvent(new Event("loginUpdated"));
+    // Save user
+    const updatedUsers = [
+      ...users,
+      newUser,
+    ];
 
-    const pendingProduct = JSON.parse(
-      localStorage.getItem("pendingCartProduct")
+    localStorage.setItem(
+      "users",
+      JSON.stringify(updatedUsers)
     );
 
-    if (pendingProduct) {
-      const currentCart =
-        JSON.parse(localStorage.getItem("cart")) || [];
+    alert("Account created successfully!");
 
-      const existingProduct = currentCart.find(
-        (item) => item.id === pendingProduct.id
-      );
-
-      let updatedCart;
-
-      if (existingProduct) {
-        updatedCart = currentCart.map((item) =>
-          item.id === pendingProduct.id
-            ? {
-                ...item,
-                quantity: (item.quantity || 1) + 1,
-              }
-            : item
-        );
-      } else {
-        updatedCart = [
-          ...currentCart,
-          {
-            ...pendingProduct,
-            quantity: 1,
-          },
-        ];
-      }
-
-      localStorage.setItem(
-        "cart",
-        JSON.stringify(updatedCart)
-      );
-
-      localStorage.removeItem("pendingCartProduct");
-
-      window.dispatchEvent(new Event("cartUpdated"));
-
-      alert(`${pendingProduct.name} added to cart!`);
-
-      navigate("/cart");
-      return;
-    }
-
-    alert("Login successful!");
-
-    const from = location.state?.from;
-
-    if (from) {
-      navigate(from);
-    } else {
-      navigate("/");
-    }
+    // Go to Login
+    navigate("/login");
   };
 
   return (
     <section className="min-h-screen bg-[#0b0b0b] flex items-center justify-center px-6 py-20">
+
       <div className="w-full max-w-md">
+
+        {/* ================= HEADING ================= */}
+
         <div className="text-center mb-8">
+
           <div className="w-16 h-16 mx-auto rounded-full bg-red-600 flex items-center justify-center shadow-lg shadow-red-950/60 mb-5">
             <span className="text-3xl">🥩</span>
           </div>
 
           <p className="text-red-500 uppercase tracking-[4px] text-sm font-bold mb-3">
-            Welcome Back
+            Fresh Meat
           </p>
 
           <h1 className="text-4xl font-extrabold text-white">
-            User <span className="text-red-600">Login</span>
+            Create <span className="text-red-600">Account</span>
           </h1>
 
           <p className="text-gray-400 mt-3">
-            Login to continue shopping at Fresh Meat.
+            Create an account to start shopping.
           </p>
+
         </div>
 
+        {/* ================= REGISTER CARD ================= */}
+
         <form
-          onSubmit={handleLogin}
+          onSubmit={handleRegister}
           className="
             bg-[#151515]
             border border-white/10
@@ -156,7 +118,44 @@ function Login() {
             duration-300
           "
         >
+
+          {/* NAME */}
+
           <div className="mb-5">
+
+            <label className="block text-gray-300 font-semibold mb-2">
+              Full Name
+            </label>
+
+            <input
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              placeholder="Enter your full name"
+              required
+              className="
+                w-full
+                bg-[#0b0b0b]
+                border border-white/10
+                text-white
+                px-4
+                py-3
+                rounded-xl
+                outline-none
+                focus:border-red-600
+                focus:ring-1
+                focus:ring-red-600
+                transition
+              "
+            />
+
+          </div>
+
+          {/* EMAIL */}
+
+          <div className="mb-5">
+
             <label className="block text-gray-300 font-semibold mb-2">
               Email Address
             </label>
@@ -183,9 +182,13 @@ function Login() {
                 transition
               "
             />
+
           </div>
 
-          <div className="mb-7">
+          {/* PASSWORD */}
+
+          <div className="mb-5">
+
             <label className="block text-gray-300 font-semibold mb-2">
               Password
             </label>
@@ -195,7 +198,7 @@ function Login() {
               name="password"
               value={formData.password}
               onChange={handleChange}
-              placeholder="Enter your password"
+              placeholder="Minimum 6 characters"
               required
               className="
                 w-full
@@ -212,7 +215,43 @@ function Login() {
                 transition
               "
             />
+
           </div>
+
+          {/* CONFIRM PASSWORD */}
+
+          <div className="mb-7">
+
+            <label className="block text-gray-300 font-semibold mb-2">
+              Confirm Password
+            </label>
+
+            <input
+              type="password"
+              name="confirmPassword"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              placeholder="Confirm your password"
+              required
+              className="
+                w-full
+                bg-[#0b0b0b]
+                border border-white/10
+                text-white
+                px-4
+                py-3
+                rounded-xl
+                outline-none
+                focus:border-red-600
+                focus:ring-1
+                focus:ring-red-600
+                transition
+              "
+            />
+
+          </div>
+
+          {/* REGISTER BUTTON */}
 
           <button
             type="submit"
@@ -231,16 +270,19 @@ function Login() {
               duration-300
             "
           >
-            Login
+            Create Account
           </button>
 
+          {/* LOGIN LINK */}
+
           <div className="text-center mt-6">
+
             <p className="text-gray-500 text-sm">
-              Don't have an account?
+              Already have an account?
             </p>
 
             <Link
-              to="/register"
+              to="/login"
               className="
                 inline-block
                 text-red-500
@@ -250,9 +292,12 @@ function Login() {
                 transition
               "
             >
-              Create Account →
+              Login →
             </Link>
+
           </div>
+
+          {/* BACK HOME */}
 
           <Link
             to="/"
@@ -268,17 +313,13 @@ function Login() {
           >
             ← Back to Home
           </Link>
+
         </form>
 
-        <div className="mt-5 text-center">
-          <p className="text-gray-600 text-xs">
-            Admin Login: admin@gmail.com / admin123
-          </p>
-        </div>
       </div>
+
     </section>
   );
 }
 
-export default Login;
-
+export default Register;

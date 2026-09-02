@@ -1,60 +1,62 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import products from "../data/products";
 
 function Products() {
+  const navigate = useNavigate();
 
   const [allProducts, setAllProducts] = useState([]);
-
+  const [isLoggedIn, setIsLoggedIn] = useState(
+    localStorage.getItem("isLoggedIn") === "true"
+  );
   const [cart, setCart] = useState(
     JSON.parse(localStorage.getItem("cart")) || []
   );
 
-  // =========================
-  // LOAD ALL PRODUCTS
-  // =========================
-
   const loadProducts = () => {
-
     const adminProducts =
-      JSON.parse(
-        localStorage.getItem("adminProducts")
-      ) || [];
+      JSON.parse(localStorage.getItem("adminProducts")) || [];
 
-    setAllProducts([
-      ...products,
-      ...adminProducts,
-    ]);
+    setAllProducts([...products, ...adminProducts]);
   };
 
   useEffect(() => {
-
     loadProducts();
 
-    // Update when Admin adds product
+    const checkLogin = () => {
+      setIsLoggedIn(localStorage.getItem("isLoggedIn") === "true");
+    };
+
     const handleProductsUpdated = () => {
       loadProducts();
     };
 
-    window.addEventListener(
-      "productsUpdated",
-      handleProductsUpdated
-    );
+    checkLogin();
+
+    window.addEventListener("storage", checkLogin);
+    window.addEventListener("loginUpdated", checkLogin);
+    window.addEventListener("productsUpdated", handleProductsUpdated);
 
     return () => {
+      window.removeEventListener("storage", checkLogin);
+      window.removeEventListener("loginUpdated", checkLogin);
       window.removeEventListener(
         "productsUpdated",
         handleProductsUpdated
       );
     };
-
   }, []);
 
-  // =========================
-  // ADD TO CART
-  // =========================
-
   const addToCart = (product) => {
+    const loggedIn =
+      localStorage.getItem("isLoggedIn") === "true";
+
+    if (!loggedIn) {
+      setIsLoggedIn(false);
+      alert("Please login first to add products to cart!");
+      navigate("/login");
+      return;
+    }
 
     const existingProduct = cart.find(
       (item) => item.id === product.id
@@ -63,7 +65,6 @@ function Products() {
     let updatedCart;
 
     if (existingProduct) {
-
       updatedCart = cart.map((item) =>
         item.id === product.id
           ? {
@@ -72,9 +73,7 @@ function Products() {
             }
           : item
       );
-
     } else {
-
       updatedCart = [
         ...cart,
         {
@@ -82,7 +81,6 @@ function Products() {
           quantity: 1,
         },
       ];
-
     }
 
     setCart(updatedCart);
@@ -92,15 +90,12 @@ function Products() {
       JSON.stringify(updatedCart)
     );
 
-    window.dispatchEvent(
-      new Event("cartUpdated")
-    );
+    window.dispatchEvent(new Event("cartUpdated"));
 
     alert(`${product.name} added to cart!`);
   };
 
   return (
-
     <section
       id="products"
       className="
@@ -110,9 +105,6 @@ function Products() {
         overflow-hidden
       "
     >
-
-      {/* Background Glow */}
-
       <div
         className="
           absolute
@@ -128,11 +120,7 @@ function Products() {
       ></div>
 
       <div className="relative max-w-7xl mx-auto px-6">
-
-        {/* ================= HEADING ================= */}
-
         <div className="text-center mb-14">
-
           <span
             className="
               inline-block
@@ -153,23 +141,17 @@ function Products() {
           </span>
 
           <h2 className="text-4xl md:text-6xl font-extrabold text-white">
-
             Fresh Meat{" "}
-
             <span className="text-red-600">
               Collection
             </span>
-
           </h2>
 
           <p className="mt-5 text-gray-400 text-lg">
             Choose from our selection of fresh and premium
             quality meat products.
           </p>
-
         </div>
-
-        {/* ================= PRODUCTS ================= */}
 
         <div
           className="
@@ -180,9 +162,7 @@ function Products() {
             gap-7
           "
         >
-
           {allProducts.map((product) => (
-
             <div
               key={product.id}
               className="
@@ -194,24 +174,23 @@ function Products() {
                 rounded-2xl
                 overflow-hidden
                 shadow-xl
-
                 hover:bg-[#2a0d12]
                 hover:border-red-600
                 hover:shadow-[0_0_35px_rgba(220,38,38,0.30)]
                 hover:-translate-y-2
-
                 transition-all
                 duration-500
               "
             >
-
-              {/* ================= IMAGE ================= */}
-
               <Link
                 to={`/product/${product.id}`}
-                className="relative h-64 overflow-hidden block"
+                className="
+                  relative
+                  h-64
+                  overflow-hidden
+                  block
+                "
               >
-
                 <img
                   src={product.image}
                   alt={product.name}
@@ -219,16 +198,12 @@ function Products() {
                     w-full
                     h-full
                     object-cover
-
                     group-hover:scale-110
                     group-hover:brightness-110
-
                     transition-all
                     duration-700
                   "
                 />
-
-                {/* Overlay */}
 
                 <div
                   className="
@@ -238,15 +213,11 @@ function Products() {
                     from-black/70
                     via-transparent
                     to-transparent
-
                     group-hover:from-red-950/50
-
                     transition-all
                     duration-500
                   "
                 ></div>
-
-                {/* Category */}
 
                 <span
                   className="
@@ -265,8 +236,6 @@ function Products() {
                 >
                   {product.category}
                 </span>
-
-                {/* View Details */}
 
                 <span
                   className="
@@ -287,13 +256,9 @@ function Products() {
                 >
                   View Details →
                 </span>
-
               </Link>
 
-              {/* ================= INFO ================= */}
-
               <div className="p-6">
-
                 <Link
                   to={`/product/${product.id}`}
                   className="
@@ -320,8 +285,6 @@ function Products() {
                   {product.description}
                 </p>
 
-                {/* Price + Cart */}
-
                 <div
                   className="
                     mt-5
@@ -331,9 +294,7 @@ function Products() {
                     gap-3
                   "
                 >
-
                   <div>
-
                     <p className="text-2xl font-extrabold text-white">
                       Rs. {product.price}
                     </p>
@@ -341,16 +302,13 @@ function Products() {
                     <p className="text-xs text-gray-500 mt-1">
                       {product.unit || "1 KG"}
                     </p>
-
                   </div>
 
                   <button
-                    onClick={() =>
-                      addToCart(product)
-                    }
-                    className="
-                      bg-red-600
-                      hover:bg-red-500
+                    type="button"
+                    disabled={!isLoggedIn}
+                    onClick={() => addToCart(product)}
+                    className={`
                       text-white
                       px-4
                       py-3
@@ -358,25 +316,22 @@ function Products() {
                       font-bold
                       whitespace-nowrap
                       transition-all
-                    "
+                      ${
+                        isLoggedIn
+                          ? "bg-red-600 hover:bg-red-500 cursor-pointer"
+                          : "bg-gray-600 cursor-not-allowed opacity-50"
+                      }
+                    `}
                   >
-                    Add to Cart
+                    {isLoggedIn ? "Add to Cart" : "Login First"}
                   </button>
-
                 </div>
-
               </div>
-
             </div>
-
           ))}
-
         </div>
-
       </div>
-
     </section>
-
   );
 }
 
