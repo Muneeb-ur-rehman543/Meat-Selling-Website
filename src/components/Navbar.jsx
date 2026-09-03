@@ -12,10 +12,16 @@ function Navbar() {
     localStorage.getItem("userName") || ""
   );
 
+  const [menuOpen, setMenuOpen] = useState(false);
+
   useEffect(() => {
     const checkLogin = () => {
-      setIsLoggedIn(localStorage.getItem("isLoggedIn") === "true");
-      setUserName(localStorage.getItem("userName") || "");
+      setIsLoggedIn(
+        localStorage.getItem("isLoggedIn") === "true"
+      );
+      setUserName(
+        localStorage.getItem("userName") || ""
+      );
     };
 
     window.addEventListener("storage", checkLogin);
@@ -29,6 +35,10 @@ function Navbar() {
     };
   }, []);
 
+  const closeMenu = () => {
+    setMenuOpen(false);
+  };
+
   const handleLogout = () => {
     localStorage.removeItem("isLoggedIn");
     localStorage.removeItem("userRole");
@@ -38,6 +48,7 @@ function Navbar() {
 
     setIsLoggedIn(false);
     setUserName("");
+    setMenuOpen(false);
 
     window.dispatchEvent(new Event("loginUpdated"));
 
@@ -48,10 +59,14 @@ function Navbar() {
 
   return (
     <nav className="sticky top-0 z-50 bg-[#18090C] border-b border-[#4A111B] shadow-2xl">
-      <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-6 min-h-20 flex items-center justify-between">
+
         <Link
           to="/"
-          onClick={() => window.scrollTo(0, 0)}
+          onClick={() => {
+            closeMenu();
+            window.scrollTo(0, 0);
+          }}
           className="flex items-center gap-3"
         >
           <div className="w-12 h-12 rounded-full bg-red-600 flex items-center justify-center shadow-lg shadow-red-950/60">
@@ -62,6 +77,7 @@ function Navbar() {
             <h1 className="text-2xl font-extrabold text-[#FFF5F5] tracking-tight">
               Fresh <span className="text-red-500">Meat</span>
             </h1>
+
             <p className="text-xs text-[#B98F8F]">
               Freshness You Can Trust
             </p>
@@ -84,12 +100,12 @@ function Navbar() {
             Categories
           </a>
 
-          <a
-            href="/#products"
+          <Link
+            to="/products"
             className="text-[#E8C7C7] font-semibold hover:text-red-500 transition duration-300"
           >
             Products
-          </a>
+          </Link>
 
           <a
             href="/#about"
@@ -106,24 +122,27 @@ function Navbar() {
           </a>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="hidden md:flex items-center gap-3">
+
           {!isLoggedIn ? (
             <Link
               to="/login"
-              className="hidden md:flex items-center gap-2 border border-red-600/60 text-red-400 hover:bg-red-600 hover:text-white px-5 py-3 rounded-xl font-bold transition-all duration-300"
+              className="flex items-center gap-2 border border-red-600/60 text-red-400 hover:bg-red-600 hover:text-white px-5 py-3 rounded-xl font-bold transition-all duration-300"
             >
               👤 Login
             </Link>
           ) : (
-            <div className="hidden md:flex items-center gap-2 border border-red-600/40 text-white px-4 py-3 rounded-xl font-bold bg-red-600/10">
+            <div className="flex items-center gap-2 border border-red-600/40 text-white px-4 py-3 rounded-xl font-bold bg-red-600/10">
               👤
-              <span className="text-red-400">{userName}</span>
+              <span className="text-red-400">
+                {userName}
+              </span>
             </div>
           )}
 
           <Link
             to="/admin"
-            className="hidden md:flex items-center gap-2 border border-red-600/60 text-red-400 hover:bg-red-600 hover:text-white px-5 py-3 rounded-xl font-bold transition-all duration-300"
+            className="flex items-center gap-2 border border-red-600/60 text-red-400 hover:bg-red-600 hover:text-white px-5 py-3 rounded-xl font-bold transition-all duration-300"
           >
             ⚙️ Admin
           </Link>
@@ -139,13 +158,123 @@ function Navbar() {
             <button
               type="button"
               onClick={handleLogout}
-              className="hidden md:flex items-center gap-2 bg-[#DC2626] hover:bg-[#B91C1C] text-white px-7 py-3 rounded-xl font-bold shadow-lg shadow-red-950/60 hover:-translate-y-0.5 transition-all duration-300"
+              className="flex items-center gap-2 bg-[#DC2626] hover:bg-[#B91C1C] text-white px-7 py-3 rounded-xl font-bold shadow-lg shadow-red-950/60 hover:-translate-y-0.5 transition-all duration-300"
             >
               🚪 Logout
             </button>
           )}
         </div>
+
+        <div className="md:hidden flex items-center gap-2">
+
+          <Link
+            to="/cart"
+            className="w-11 h-11 flex items-center justify-center border border-red-600/60 text-white rounded-xl text-xl"
+          >
+            🛒
+          </Link>
+
+          <button
+            type="button"
+            onClick={() => setMenuOpen(!menuOpen)}
+            className="w-11 h-11 flex items-center justify-center border border-red-600/60 text-white rounded-xl text-2xl"
+          >
+            {menuOpen ? "✕" : "☰"}
+          </button>
+
+        </div>
       </div>
+
+      {menuOpen && (
+        <div className="md:hidden bg-[#18090C] border-t border-red-600/30 px-6 py-5">
+          <div className="flex flex-col">
+
+            <Link
+              to="/"
+              onClick={() => {
+                closeMenu();
+                window.scrollTo(0, 0);
+              }}
+              className="text-[#E8C7C7] font-semibold hover:text-red-500 py-4 border-b border-white/10"
+            >
+              Home
+            </Link>
+
+            <a
+              href="/#categories"
+              onClick={closeMenu}
+              className="text-[#E8C7C7] font-semibold hover:text-red-500 py-4 border-b border-white/10"
+            >
+              Categories
+            </a>
+
+            <Link
+              to="/products"
+              onClick={closeMenu}
+              className="text-[#E8C7C7] font-semibold hover:text-red-500 py-4 border-b border-white/10"
+            >
+              Products
+            </Link>
+
+            <a
+              href="/#about"
+              onClick={closeMenu}
+              className="text-[#E8C7C7] font-semibold hover:text-red-500 py-4 border-b border-white/10"
+            >
+              About
+            </a>
+
+            <a
+              href="/#contact"
+              onClick={closeMenu}
+              className="text-[#E8C7C7] font-semibold hover:text-red-500 py-4 border-b border-white/10"
+            >
+              Contact
+            </a>
+
+            {!isLoggedIn ? (
+              <Link
+                to="/login"
+                onClick={closeMenu}
+                className="text-red-400 font-bold py-4 border-b border-white/10"
+              >
+                👤 Login
+              </Link>
+            ) : (
+              <div className="text-red-400 font-bold py-4 border-b border-white/10">
+                👤 {userName}
+              </div>
+            )}
+
+            <Link
+              to="/admin"
+              onClick={closeMenu}
+              className="text-red-400 font-bold py-4 border-b border-white/10"
+            >
+              ⚙️ Admin
+            </Link>
+
+            <Link
+              to="/cart"
+              onClick={closeMenu}
+              className="text-white font-bold py-4 border-b border-white/10"
+            >
+              🛒 Cart
+            </Link>
+
+            {isLoggedIn && (
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="text-left text-red-400 font-bold py-4"
+              >
+                🚪 Logout
+              </button>
+            )}
+
+          </div>
+        </div>
+      )}
 
       <div className="h-[2px] bg-gradient-to-r from-transparent via-[#DC2626] to-transparent"></div>
     </nav>
@@ -153,4 +282,3 @@ function Navbar() {
 }
 
 export default Navbar;
-
