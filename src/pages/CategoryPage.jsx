@@ -1,51 +1,29 @@
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
-// ===============================
-// BEEF IMAGES
-// ===============================
 import beefSteak from "../assets/images/beef.jpg";
 import beefMince from "../assets/images/beef-mince.jpg";
 import beefRibs from "../assets/images/beef-ribs.jpg";
 import beefBoneless from "../assets/images/beef-boneless.jpg";
 
-// ===============================
-// CHICKEN IMAGES
-// ===============================
 import chickenBreast from "../assets/images/chicken-breast.jpg";
 import chickenWings from "../assets/images/chicken-wings.jpg";
 import chickenLeg from "../assets/images/chicken-leg.jpg";
 import chickenBoneless from "../assets/images/boneless-chicken.jpg";
 
-// ===============================
-// MUTTON IMAGES
-// ===============================
 import muttonChops from "../assets/images/mutton-chops.jpg";
 import muttonLeg from "../assets/images/mutton-legs.jpg";
 import muttonRibs from "../assets/images/mutton-ribs.jpg";
 import muttonKarahi from "../assets/images/mutton-karahicut.jpg";
 
-// ===============================
-// SEAFOOD IMAGES
-// ===============================
 import freshFish from "../assets/images/fresh fish.jpg";
 import fishFillet from "../assets/images/fish fillet.jpg";
 import freshPrawns from "../assets/images/fresh-prawns.jpg";
 import shrimp from "../assets/images/shrimp.jpg";
 
-
-// ===============================
-// CATEGORY DATA
-// ===============================
-
 const categoryData = {
-
-  // -------------------------------
-  // BEEF
-  // -------------------------------
   beef: {
     name: "Beef",
     description: "Fresh and premium quality beef cuts",
-
     products: [
       {
         id: 1,
@@ -78,14 +56,9 @@ const categoryData = {
     ],
   },
 
-
-  // -------------------------------
-  // CHICKEN
-  // -------------------------------
   chicken: {
     name: "Chicken",
     description: "Fresh and hygienic chicken products",
-
     products: [
       {
         id: 5,
@@ -118,14 +91,9 @@ const categoryData = {
     ],
   },
 
-
-  // -------------------------------
-  // MUTTON
-  // -------------------------------
   mutton: {
     name: "Mutton",
     description: "Tender and fresh premium mutton",
-
     products: [
       {
         id: 9,
@@ -158,14 +126,9 @@ const categoryData = {
     ],
   },
 
-
-  // -------------------------------
-  // SEAFOOD
-  // -------------------------------
   seafood: {
     name: "Seafood",
     description: "Fresh fish and premium seafood",
-
     products: [
       {
         id: 13,
@@ -199,34 +162,33 @@ const categoryData = {
   },
 };
 
-
-// ===============================
-// COMPONENT
-// ===============================
-
 function CategoryPage() {
-
   const { category } = useParams();
+  const navigate = useNavigate();
+
+  const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
 
   const data = categoryData[category];
 
-
-  // Category not found
   if (!data) {
     return (
       <section className="min-h-screen bg-[#090909] flex items-center justify-center">
-
         <h1 className="text-4xl font-extrabold text-red-500">
           Category Not Found
         </h1>
-
       </section>
     );
   }
 
-
-  // Add to cart
   const addToCart = (product) => {
+    const loggedIn =
+      localStorage.getItem("isLoggedIn") === "true";
+
+    if (!loggedIn) {
+      alert("Please login first to add products to cart.");
+      navigate("/login");
+      return;
+    }
 
     const oldCart =
       JSON.parse(localStorage.getItem("cart")) || [];
@@ -238,7 +200,6 @@ function CategoryPage() {
     let updatedCart;
 
     if (existingProduct) {
-
       updatedCart = oldCart.map((item) =>
         item.id === product.id
           ? {
@@ -247,9 +208,7 @@ function CategoryPage() {
             }
           : item
       );
-
     } else {
-
       updatedCart = [
         ...oldCart,
         {
@@ -257,7 +216,6 @@ function CategoryPage() {
           quantity: 1,
         },
       ];
-
     }
 
     localStorage.setItem(
@@ -268,100 +226,27 @@ function CategoryPage() {
     alert(`${product.name} added to cart!`);
   };
 
-
   return (
-
-    <section
-      className="
-        min-h-screen
-        bg-[#090909]
-        py-24
-        relative
-        overflow-hidden
-      "
-    >
-
-      {/* Background Glow */}
-
-      <div
-        className="
-          absolute
-          top-20
-          left-1/2
-          -translate-x-1/2
-          w-[600px]
-          h-[300px]
-          bg-red-900/10
-          blur-[120px]
-          rounded-full
-        "
-      ></div>
-
+    <section className="min-h-screen bg-[#090909] py-24 relative overflow-hidden">
+      <div className="absolute top-20 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-red-900/10 blur-[120px] rounded-full"></div>
 
       <div className="relative max-w-7xl mx-auto px-6">
-
-
-        {/* ===============================
-            HEADING
-        =============================== */}
-
         <div className="text-center mb-14">
-
-          <p
-            className="
-              text-red-500
-              uppercase
-              tracking-[4px]
-              font-bold
-              text-sm
-              mb-3
-            "
-          >
+          <p className="text-red-500 uppercase tracking-[4px] font-bold text-sm mb-3">
             Fresh Selection
           </p>
 
-
-          <h1
-            className="
-              text-5xl
-              md:text-6xl
-              font-extrabold
-              text-white
-            "
-          >
+          <h1 className="text-5xl md:text-6xl font-extrabold text-white">
             {data.name}
           </h1>
 
-
-          <p
-            className="
-              text-gray-400
-              text-lg
-              mt-4
-            "
-          >
+          <p className="text-gray-400 text-lg mt-4">
             {data.description}
           </p>
-
         </div>
 
-
-        {/* ===============================
-            PRODUCTS GRID
-        =============================== */}
-
-        <div
-          className="
-            grid
-            grid-cols-1
-            sm:grid-cols-2
-            lg:grid-cols-4
-            gap-7
-          "
-        >
-
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-7">
           {data.products.map((product) => (
-
             <div
               key={product.id}
               className="
@@ -373,31 +258,15 @@ function CategoryPage() {
                 rounded-2xl
                 overflow-hidden
                 shadow-xl
-
                 hover:bg-[#2a0d12]
                 hover:border-red-600
                 hover:shadow-[0_0_35px_rgba(220,38,38,0.35)]
                 hover:-translate-y-2
-
                 transition-all
                 duration-500
               "
             >
-
-
-              {/* ===============================
-                  IMAGE
-              =============================== */}
-
-              <div
-                className="
-                  relative
-                  h-52
-                  overflow-hidden
-                  bg-[#111111]
-                "
-              >
-
+              <div className="relative h-52 overflow-hidden bg-[#111111]">
                 <img
                   src={product.image}
                   alt={product.name}
@@ -405,17 +274,12 @@ function CategoryPage() {
                     w-full
                     h-full
                     object-cover
-
                     group-hover:scale-110
                     group-hover:brightness-110
-
                     transition-all
                     duration-700
                   "
                 />
-
-
-                {/* Dark Overlay */}
 
                 <div
                   className="
@@ -425,16 +289,11 @@ function CategoryPage() {
                     from-black/70
                     via-transparent
                     to-transparent
-
                     group-hover:from-red-950/50
-
                     transition-all
                     duration-500
                   "
                 ></div>
-
-
-                {/* Fresh Badge */}
 
                 <span
                   className="
@@ -455,25 +314,15 @@ function CategoryPage() {
                 >
                   Fresh
                 </span>
-
               </div>
 
-
-              {/* ===============================
-                  PRODUCT DETAILS
-              =============================== */}
-
               <div className="p-6">
-
-
                 <h2
                   className="
                     text-xl
                     font-extrabold
                     text-white
-
                     group-hover:text-red-500
-
                     transition-colors
                     duration-300
                   "
@@ -481,16 +330,13 @@ function CategoryPage() {
                   {product.name}
                 </h2>
 
-
                 <p
                   className="
                     text-gray-400
                     text-sm
                     mt-2
                     min-h-[40px]
-
                     group-hover:text-gray-200
-
                     transition-colors
                     duration-300
                   "
@@ -498,74 +344,47 @@ function CategoryPage() {
                   {product.description}
                 </p>
 
-
-                {/* Price + Button */}
-
-                <div
-                  className="
-                    flex
-                    items-center
-                    justify-between
-                    gap-3
-                    mt-6
-                  "
-                >
-
+                <div className="flex items-center justify-between gap-3 mt-6">
                   <div>
-
-                    <p
-                      className="
-                        text-xl
-                        font-extrabold
-                        text-red-500
-                      "
-                    >
+                    <p className="text-xl font-extrabold text-red-500">
                       Rs. {product.price}
                     </p>
 
                     <p className="text-xs text-gray-500 mt-1">
                       1 KG
                     </p>
-
                   </div>
-
 
                   <button
                     onClick={() => addToCart(product)}
-                    className="
-                      bg-red-600
-                      hover:bg-red-500
+                    disabled={!isLoggedIn}
+                    className={`
                       text-white
                       px-4
                       py-3
                       rounded-xl
                       font-bold
                       whitespace-nowrap
-
-                      group-hover:shadow-lg
-                      group-hover:shadow-red-600/40
-
                       transition-all
                       duration-300
-                    "
+                      ${
+                        isLoggedIn
+                          ? "bg-red-600 hover:bg-red-500 cursor-pointer group-hover:shadow-lg group-hover:shadow-red-600/40"
+                          : "bg-gray-600 opacity-50 cursor-not-allowed"
+                      }
+                    `}
                   >
-                    Add to Cart
+                    {isLoggedIn ? "Add to Cart" : "Login to Add"}
                   </button>
-
                 </div>
-
               </div>
-
             </div>
-
           ))}
-
         </div>
-
       </div>
-
     </section>
   );
 }
 
 export default CategoryPage;
+

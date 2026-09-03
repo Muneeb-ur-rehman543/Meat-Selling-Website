@@ -1,15 +1,19 @@
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import products from "../data/products";
 import { useState } from "react";
 
 function ProductDetails() {
   const { id } = useParams();
+  const navigate = useNavigate();
 
   const product = products.find(
     (item) => String(item.id) === String(id)
   );
 
   const [quantity, setQuantity] = useState(1);
+
+  const isLoggedIn =
+    localStorage.getItem("isLoggedIn") === "true";
 
   if (!product) {
     return (
@@ -31,7 +35,17 @@ function ProductDetails() {
   }
 
   const addToCart = () => {
-    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+    const loggedIn =
+      localStorage.getItem("isLoggedIn") === "true";
+
+    if (!loggedIn) {
+      alert("Please login first to add products to cart.");
+      navigate("/login");
+      return;
+    }
+
+    const cart =
+      JSON.parse(localStorage.getItem("cart")) || [];
 
     const existingProduct = cart.find(
       (item) => item.id === product.id
@@ -58,20 +72,20 @@ function ProductDetails() {
       ];
     }
 
-    localStorage.setItem("cart", JSON.stringify(updatedCart));
+    localStorage.setItem(
+      "cart",
+      JSON.stringify(updatedCart)
+    );
 
     alert(`${product.name} added to cart!`);
   };
 
   return (
     <section className="min-h-screen bg-[#0b0b0b] py-24 relative overflow-hidden">
-
-      {/* Background Glow */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[650px] h-[350px] bg-red-950/20 blur-[130px] rounded-full"></div>
 
       <div className="relative max-w-6xl mx-auto px-6">
 
-        {/* Back Button */}
         <Link
           to="/"
           className="inline-flex items-center gap-2 text-gray-400 hover:text-red-500 font-semibold mb-10 transition"
@@ -79,7 +93,6 @@ function ProductDetails() {
           ← Back to Products
         </Link>
 
-        {/* Product Details Card */}
         <div
           className="
             grid
@@ -92,14 +105,12 @@ function ProductDetails() {
             rounded-3xl
             overflow-hidden
             shadow-2xl
-
             hover:border-red-600/60
             transition-all
             duration-500
           "
         >
 
-          {/* ================= IMAGE ================= */}
           <div className="relative h-[450px] lg:h-[600px] overflow-hidden">
 
             <img
@@ -115,10 +126,8 @@ function ProductDetails() {
               "
             />
 
-            {/* Overlay */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div>
 
-            {/* Category Badge */}
             <span
               className="
                 absolute
@@ -139,7 +148,6 @@ function ProductDetails() {
 
           </div>
 
-          {/* ================= INFORMATION ================= */}
           <div className="p-8 lg:p-12 flex flex-col justify-center">
 
             <p className="text-red-500 uppercase tracking-[4px] text-sm font-bold mb-4">
@@ -154,7 +162,6 @@ function ProductDetails() {
               {product.description}
             </p>
 
-            {/* Price */}
             <div className="mt-8">
 
               <p className="text-gray-500 text-sm">
@@ -167,7 +174,6 @@ function ProductDetails() {
 
             </div>
 
-            {/* Quantity */}
             <div className="mt-8">
 
               <p className="text-white font-bold mb-3">
@@ -190,10 +196,8 @@ function ProductDetails() {
                     text-white
                     text-2xl
                     font-bold
-
                     hover:bg-red-600
                     hover:border-red-600
-
                     transition
                   "
                 >
@@ -218,10 +222,8 @@ function ProductDetails() {
                     text-white
                     text-2xl
                     font-bold
-
                     hover:bg-red-600
                     hover:border-red-600
-
                     transition
                   "
                 >
@@ -236,7 +238,6 @@ function ProductDetails() {
 
             </div>
 
-            {/* Total */}
             <div className="mt-7 flex items-center justify-between">
 
               <span className="text-gray-400">
@@ -249,28 +250,29 @@ function ProductDetails() {
 
             </div>
 
-            {/* Add To Cart */}
             <button
               onClick={addToCart}
-              className="
+              disabled={!isLoggedIn}
+              className={`
                 mt-8
                 w-full
-                bg-red-600
-                hover:bg-red-500
                 text-white
                 py-4
                 rounded-xl
                 font-extrabold
                 text-lg
-
-                hover:shadow-[0_0_30px_rgba(220,38,38,0.35)]
-                hover:-translate-y-1
-
                 transition-all
                 duration-300
-              "
+                ${
+                  isLoggedIn
+                    ? "bg-red-600 hover:bg-red-500 hover:shadow-[0_0_30px_rgba(220,38,38,0.35)] hover:-translate-y-1 cursor-pointer"
+                    : "bg-gray-600 opacity-50 cursor-not-allowed"
+                }
+              `}
             >
-              🛒 Add to Cart
+              {isLoggedIn
+                ? "🛒 Add to Cart"
+                : "🔒 Login First"}
             </button>
 
           </div>
