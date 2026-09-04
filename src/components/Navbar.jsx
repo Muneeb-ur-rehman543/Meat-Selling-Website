@@ -19,6 +19,7 @@ function Navbar() {
       setIsLoggedIn(
         localStorage.getItem("isLoggedIn") === "true"
       );
+
       setUserName(
         localStorage.getItem("userName") || ""
       );
@@ -85,6 +86,7 @@ function Navbar() {
         </Link>
 
         <div className="hidden md:flex items-center gap-7">
+
           <Link
             to="/"
             onClick={() => window.scrollTo(0, 0)}
@@ -141,7 +143,7 @@ function Navbar() {
           )}
 
           <Link
-            to="/admin"
+            to="/admin-login"
             className="flex items-center gap-2 border border-red-600/60 text-red-400 hover:bg-red-600 hover:text-white px-5 py-3 rounded-xl font-bold transition-all duration-300"
           >
             ⚙️ Admin
@@ -163,6 +165,7 @@ function Navbar() {
               🚪 Logout
             </button>
           )}
+
         </div>
 
         <div className="md:hidden flex items-center gap-2">
@@ -247,7 +250,7 @@ function Navbar() {
             )}
 
             <Link
-              to="/admin"
+              to="/admin-login"
               onClick={closeMenu}
               className="text-red-400 font-bold py-4 border-b border-white/10"
             >

@@ -23,9 +23,14 @@ function Admin() {
 
   const [imagePreview, setImagePreview] = useState("");
 
-  // =========================
-  // ORDERS
-  // =========================
+  useEffect(() => {
+    const isAdminLoggedIn =
+      localStorage.getItem("adminLoggedIn") === "true";
+
+    if (!isAdminLoggedIn) {
+      navigate("/admin-login");
+    }
+  }, [navigate]);
 
   useEffect(() => {
     const savedOrders =
@@ -33,10 +38,6 @@ function Admin() {
 
     setOrders(savedOrders);
   }, []);
-
-  // =========================
-  // PRODUCT IMAGE
-  // =========================
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -57,20 +58,12 @@ function Admin() {
     reader.readAsDataURL(file);
   };
 
-  // =========================
-  // FORM CHANGE
-  // =========================
-
   const handleChange = (e) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
     });
   };
-
-  // =========================
-  // ADD PRODUCT
-  // =========================
 
   const addProduct = (e) => {
     e.preventDefault();
@@ -107,12 +100,10 @@ function Admin() {
       JSON.stringify(updatedProducts)
     );
 
-    // Tell Products.jsx that a new product was added
     window.dispatchEvent(new Event("productsUpdated"));
 
     alert("Product added successfully!");
 
-    // Reset form
     setFormData({
       name: "",
       category: "Beef",
@@ -124,11 +115,13 @@ function Admin() {
     setImagePreview("");
   };
 
-  // =========================
-  // DELETE PRODUCT
-  // =========================
-
   const deleteProduct = (id) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this product?"
+    );
+
+    if (!confirmDelete) return;
+
     const updatedProducts = adminProducts.filter(
       (product) => product.id !== id
     );
@@ -142,10 +135,6 @@ function Admin() {
 
     window.dispatchEvent(new Event("productsUpdated"));
   };
-
-  // =========================
-  // ORDER STATUS
-  // =========================
 
   const updateOrderStatus = (id, status) => {
     const updatedOrders = orders.map((order) =>
@@ -165,9 +154,26 @@ function Admin() {
     );
   };
 
-  // =========================
-  // LOGOUT
-  // =========================
+  const deleteOrder = (id) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this delivered order?"
+    );
+
+    if (!confirmDelete) return;
+
+    const updatedOrders = orders.filter(
+      (order) => order.id !== id
+    );
+
+    setOrders(updatedOrders);
+
+    localStorage.setItem(
+      "orders",
+      JSON.stringify(updatedOrders)
+    );
+
+    alert("Delivered order deleted successfully!");
+  };
 
   const logout = () => {
     localStorage.removeItem("adminLoggedIn");
@@ -176,10 +182,6 @@ function Admin() {
 
     navigate("/");
   };
-
-  // =========================
-  // STATISTICS
-  // =========================
 
   const totalProducts =
     products.length + adminProducts.length;
@@ -194,10 +196,7 @@ function Admin() {
 
   return (
     <section className="min-h-screen bg-[#0b0b0b] text-white py-20 px-6">
-
       <div className="max-w-7xl mx-auto">
-
-        {/* ================= HEADER ================= */}
 
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-5 mb-12">
 
@@ -217,8 +216,6 @@ function Admin() {
               Manage products and customer orders.
             </p>
           </div>
-
-          {/* Logout */}
 
           <button
             onClick={logout}
@@ -240,11 +237,7 @@ function Admin() {
 
         </div>
 
-        {/* ================= STATS ================= */}
-
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-
-          {/* Total Products */}
 
           <div className="bg-[#151515] border border-white/10 rounded-2xl p-6">
             <p className="text-gray-400">
@@ -256,8 +249,6 @@ function Admin() {
             </h2>
           </div>
 
-          {/* Orders */}
-
           <div className="bg-[#151515] border border-white/10 rounded-2xl p-6">
             <p className="text-gray-400">
               Total Orders
@@ -268,8 +259,6 @@ function Admin() {
             </h2>
           </div>
 
-          {/* Delivered */}
-
           <div className="bg-[#151515] border border-white/10 rounded-2xl p-6">
             <p className="text-gray-400">
               Delivered Orders
@@ -279,8 +268,6 @@ function Admin() {
               {deliveredOrders}
             </h2>
           </div>
-
-          {/* Pending */}
 
           <div className="bg-[#151515] border border-white/10 rounded-2xl p-6">
             <p className="text-gray-400">
@@ -294,8 +281,6 @@ function Admin() {
 
         </div>
 
-        {/* ================= ADD PRODUCT ================= */}
-
         <div className="bg-[#151515] border border-white/10 rounded-3xl p-8 mb-12">
 
           <h2 className="text-3xl font-extrabold mb-8">
@@ -306,8 +291,6 @@ function Admin() {
             onSubmit={addProduct}
             className="grid grid-cols-1 md:grid-cols-2 gap-6"
           >
-
-            {/* Product Name */}
 
             <div>
               <label className="block text-gray-300 font-semibold mb-2">
@@ -332,8 +315,6 @@ function Admin() {
                 "
               />
             </div>
-
-            {/* Category */}
 
             <div>
               <label className="block text-gray-300 font-semibold mb-2">
@@ -362,8 +343,6 @@ function Admin() {
               </select>
             </div>
 
-            {/* Price */}
-
             <div>
               <label className="block text-gray-300 font-semibold mb-2">
                 Price
@@ -388,8 +367,6 @@ function Admin() {
               />
             </div>
 
-            {/* Image */}
-
             <div>
               <label className="block text-gray-300 font-semibold mb-2">
                 Product Image
@@ -409,8 +386,6 @@ function Admin() {
                 "
               />
             </div>
-
-            {/* Description */}
 
             <div className="md:col-span-2">
 
@@ -439,8 +414,6 @@ function Admin() {
 
             </div>
 
-            {/* Image Preview */}
-
             {imagePreview && (
               <div className="md:col-span-2">
 
@@ -463,8 +436,6 @@ function Admin() {
 
               </div>
             )}
-
-            {/* Submit */}
 
             <div className="md:col-span-2">
 
@@ -491,8 +462,6 @@ function Admin() {
 
         </div>
 
-        {/* ================= ADDED PRODUCTS ================= */}
-
         {adminProducts.length > 0 && (
           <div className="mb-12">
 
@@ -503,7 +472,6 @@ function Admin() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
 
               {adminProducts.map((product) => (
-
                 <div
                   key={product.id}
                   className="
@@ -562,15 +530,12 @@ function Admin() {
                   </div>
 
                 </div>
-
               ))}
 
             </div>
 
           </div>
         )}
-
-        {/* ================= ORDERS ================= */}
 
         <div>
 
@@ -581,9 +546,11 @@ function Admin() {
           {orders.length === 0 ? (
 
             <div className="bg-[#151515] border border-white/10 rounded-2xl p-10 text-center">
+
               <p className="text-gray-400">
                 No orders available yet.
               </p>
+
             </div>
 
           ) : (
@@ -639,7 +606,7 @@ function Admin() {
                       </p>
 
                       <select
-                        value={order.status}
+                        value={order.status || "Pending"}
                         onChange={(e) =>
                           updateOrderStatus(
                             order.id,
@@ -657,6 +624,7 @@ function Admin() {
                           outline-none
                         "
                       >
+
                         <option value="Pending">
                           Pending
                         </option>
@@ -666,6 +634,29 @@ function Admin() {
                         </option>
 
                       </select>
+
+                      {order.status === "Delivered" && (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            deleteOrder(order.id)
+                          }
+                          className="
+                            mt-4
+                            w-full
+                            bg-red-600
+                            hover:bg-red-500
+                            text-white
+                            px-4
+                            py-2
+                            rounded-lg
+                            font-bold
+                            transition
+                          "
+                        >
+                          🗑️ Delete Order
+                        </button>
+                      )}
 
                     </div>
 
@@ -682,7 +673,6 @@ function Admin() {
         </div>
 
       </div>
-
     </section>
   );
 }

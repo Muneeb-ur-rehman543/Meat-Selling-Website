@@ -12,7 +12,6 @@ function Checkout() {
     address: "",
   });
 
-  // ================= LOAD CART =================
   useEffect(() => {
     try {
       const savedCart = JSON.parse(localStorage.getItem("cart")) || [];
@@ -23,14 +22,12 @@ function Checkout() {
     }
   }, []);
 
-  // ================= TOTAL =================
   const total = cart.reduce(
     (sum, item) =>
       sum + Number(item.price) * (item.quantity || 1),
     0
   );
 
-  // ================= FORM CHANGE =================
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -40,7 +37,6 @@ function Checkout() {
     }));
   };
 
-  // ================= PLACE ORDER =================
   const placeOrder = (e) => {
     e.preventDefault();
 
@@ -73,28 +69,23 @@ function Checkout() {
         JSON.stringify(updatedOrders)
       );
 
-      // Empty cart
       localStorage.removeItem("cart");
 
-      // Update navbar cart count
       window.dispatchEvent(new Event("cartUpdated"));
 
       alert("Order placed successfully!");
 
-      // Go to Admin
-      navigate("/admin");
+      navigate("/");
     } catch (error) {
       console.error("Order saving error:", error);
       alert("Something went wrong while placing your order.");
     }
   };
 
-  // ================= EMPTY CART =================
   if (cart.length === 0) {
     return (
       <section className="min-h-screen bg-[#0b0b0b] text-white flex items-center justify-center px-6 py-24">
         <div className="text-center">
-
           <div className="text-7xl mb-6">
             🛒
           </div>
@@ -123,21 +114,16 @@ function Checkout() {
           >
             Continue Shopping
           </Link>
-
         </div>
       </section>
     );
   }
 
-  // ================= CHECKOUT PAGE =================
   return (
     <section className="min-h-screen bg-[#0b0b0b] text-white py-24 px-6">
-
       <div className="max-w-6xl mx-auto">
 
-        {/* ================= HEADING ================= */}
         <div className="text-center mb-14">
-
           <p className="text-red-500 uppercase tracking-[4px] text-sm font-bold mb-4">
             Delivery Information
           </p>
@@ -152,15 +138,11 @@ function Checkout() {
           <p className="text-gray-400 mt-4 text-lg">
             Enter your delivery information to complete your order.
           </p>
-
         </div>
 
-        {/* ================= MAIN GRID ================= */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-          {/* ================= DELIVERY FORM ================= */}
           <div className="lg:col-span-2">
-
             <form
               onSubmit={placeOrder}
               className="
@@ -173,14 +155,11 @@ function Checkout() {
                 shadow-2xl
               "
             >
-
               <h2 className="text-2xl font-extrabold mb-8">
                 Delivery Information
               </h2>
 
-              {/* FULL NAME */}
               <div className="mb-6">
-
                 <label className="block text-gray-300 font-semibold mb-2">
                   Full Name
                 </label>
@@ -206,12 +185,9 @@ function Checkout() {
                     transition
                   "
                 />
-
               </div>
 
-              {/* PHONE */}
               <div className="mb-6">
-
                 <label className="block text-gray-300 font-semibold mb-2">
                   Phone Number
                 </label>
@@ -237,12 +213,9 @@ function Checkout() {
                     transition
                   "
                 />
-
               </div>
 
-              {/* CITY */}
               <div className="mb-6">
-
                 <label className="block text-gray-300 font-semibold mb-2">
                   City
                 </label>
@@ -268,12 +241,9 @@ function Checkout() {
                     transition
                   "
                 />
-
               </div>
 
-              {/* ADDRESS */}
               <div className="mb-8">
-
                 <label className="block text-gray-300 font-semibold mb-2">
                   Complete Address
                 </label>
@@ -299,11 +269,9 @@ function Checkout() {
                     transition
                     resize-none
                   "
-                />
-
+                ></textarea>
               </div>
 
-              {/* PLACE ORDER */}
               <button
                 type="submit"
                 className="
@@ -323,14 +291,10 @@ function Checkout() {
               >
                 🛒 Place Order
               </button>
-
             </form>
-
           </div>
 
-          {/* ================= ORDER SUMMARY ================= */}
           <div>
-
             <div
               className="
                 bg-[#151515]
@@ -343,16 +307,12 @@ function Checkout() {
                 lg:top-28
               "
             >
-
               <h2 className="text-2xl font-extrabold mb-7">
                 Order Summary
               </h2>
 
-              {/* PRODUCTS */}
               <div className="space-y-5 mb-7">
-
                 {cart.map((item) => (
-
                   <div
                     key={item.id}
                     className="
@@ -364,9 +324,7 @@ function Checkout() {
                       pb-5
                     "
                   >
-
                     <div className="flex gap-3">
-
                       <img
                         src={item.image}
                         alt={item.name}
@@ -379,7 +337,6 @@ function Checkout() {
                       />
 
                       <div>
-
                         <p className="text-white font-bold">
                           {item.name}
                         </p>
@@ -387,9 +344,7 @@ function Checkout() {
                         <p className="text-gray-500 text-sm mt-1">
                           Qty: {item.quantity || 1}
                         </p>
-
                       </div>
-
                     </div>
 
                     <p className="text-red-500 font-bold whitespace-nowrap">
@@ -397,16 +352,11 @@ function Checkout() {
                       {Number(item.price) *
                         (item.quantity || 1)}
                     </p>
-
                   </div>
-
                 ))}
-
               </div>
 
-              {/* ITEMS */}
               <div className="flex justify-between text-gray-400 mb-4">
-
                 <span>
                   Total Items
                 </span>
@@ -418,12 +368,9 @@ function Checkout() {
                     0
                   )}
                 </span>
-
               </div>
 
-              {/* DELIVERY */}
               <div className="flex justify-between text-gray-400 mb-5">
-
                 <span>
                   Delivery
                 </span>
@@ -431,14 +378,10 @@ function Checkout() {
                 <span className="text-green-500 font-bold">
                   FREE
                 </span>
-
               </div>
 
-              {/* TOTAL */}
               <div className="border-t border-white/10 pt-5">
-
                 <div className="flex justify-between items-center">
-
                   <span className="text-gray-300 font-semibold">
                     Total
                   </span>
@@ -446,12 +389,9 @@ function Checkout() {
                   <span className="text-3xl font-extrabold text-red-500">
                     Rs. {total}
                   </span>
-
                 </div>
-
               </div>
 
-              {/* BACK TO CART */}
               <Link
                 to="/cart"
                 className="
@@ -466,15 +406,11 @@ function Checkout() {
               >
                 ← Back to Cart
               </Link>
-
             </div>
-
           </div>
 
         </div>
-
       </div>
-
     </section>
   );
 }
